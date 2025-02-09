@@ -1,0 +1,46 @@
+[
+  {
+    "id": 1,
+    "title": "Tv",
+    "description": "Tv Led",
+    "code": 123,
+    "price": 200,
+    "status": "Active",
+    "stock": 200,
+    "category": "Tec",
+    "thumbnails": "no se"
+  },
+  {
+    "id": 2,
+    "title": "Guitarra",
+    "description": "Guitarral Electrica",
+    "code": 899,
+    "price": 1000,
+    "status": "Active",
+    "stock": 89,
+    "category": "Instrument",
+    "thumbnails": "no se"
+  },
+  {
+    "id": 3,
+    "title": "Libro",
+    "description": "Libro de dibujo",
+    "code": 444,
+    "price": 10,
+    "status": "Active",
+    "stock": 200,
+    "category": "Libro",
+    "thumbnails": "no se"
+  },
+  {
+    "id": 4,
+    "title": "Moto",
+    "description": "Moto Yamaha",
+    "code": 12,
+    "price": 1200,
+    "status": "Active",
+    "stock": 12,
+    "category": "Moto",
+    "thumbnails": "no se"
+  }
+]
