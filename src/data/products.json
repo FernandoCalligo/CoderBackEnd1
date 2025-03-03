@@ -42,5 +42,54 @@
     "stock": 12,
     "category": "Moto",
     "thumbnails": "no se"
+  },
+  {
+    "id": 5,
+    "title": "aaa",
+    "price": "222"
+  },
+  {
+    "id": 6,
+    "title": "Mueble",
+    "description": "mueble de madera",
+    "code": 23,
+    "price": 42,
+    "status": "Active",
+    "stock": 200,
+    "category": "mueble",
+    "thumbnails": "no se"
+  },
+  {
+    "id": 7,
+    "title": "Mueble 2",
+    "description": "mueble de piedra",
+    "code": 24,
+    "price": 42,
+    "status": "Active",
+    "stock": 200,
+    "category": "mueble",
+    "thumbnails": "no se"
+  },
+  {
+    "id": 8,
+    "title": "mueble 3",
+    "description": "mueble de melamina",
+    "code": "12",
+    "price": "400",
+    "status": "Activo",
+    "stock": "400",
+    "category": "Muelbe",
+    "thumbnails": "no se"
+  },
+  {
+    "id": 9,
+    "title": "mueble 4",
+    "description": "mueble de madera dura",
+    "code": "122",
+    "price": "400",
+    "status": "Activo",
+    "stock": "400",
+    "category": "Muelbe",
+    "thumbnails": "no se"
   }
 ]

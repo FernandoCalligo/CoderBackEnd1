@@ -1,0 +1,57 @@
+<h1>Lista de Productos en Tiempo Real</h1>
+<ul id="product-list"></ul>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const socket = io();
+
+        socket.on('connect', () => {
+            console.log('Conectado al servidor de Socket.IO');
+        });
+
+        // Escucho los productos del servidor
+        
+        socket.on('updateProducts', (products) => {
+            const productList = document.getElementById('product-list');
+            productList.innerHTML = '';
+            products.forEach(product => {
+                const li = document.createElement('li');
+                li.textContent = `${product.title} - $${product.price}`;
+                productList.appendChild(li);
+            });
+        });
+
+        // Agrego un producto
+
+        document.getElementById('add-product-form').addEventListener('submit', (event) => {
+            event.preventDefault();
+            const title = document.getElementById('title').value;
+            const description = document.getElementById('description').value;
+            const code = document.getElementById('code').value;
+            const price = document.getElementById('price').value;
+            const status = document.getElementById('status').value;
+            const stock = document.getElementById('stock').value;
+            const category = document.getElementById('category').value;
+            const thumbnails = document.getElementById('thumbnails').value;
+
+            socket.emit('addProduct', { title, description, code, price, status, stock, category, thumbnails });
+        });
+
+        // Traigo los productos al cargar la página
+        socket.emit('requestProducts');
+    });
+</script>
+
+
+<form id="add-product-form">
+    <input type="text" id="title" placeholder="Nombre del producto" required>
+    <input type="text" id="description" placeholder="Descripción" required>
+    <input type="number" id="code" placeholder="Código" required>
+    <input type="number" id="price" placeholder="Precio" required>
+    <input type="text" id="status" placeholder="Estado" required>
+    <input type="number" id="stock" placeholder="Stock" required>
+    <input type="text" id="category" placeholder="Categoría" required>
+    <input type="text" id="thumbnails" placeholder="Thumbnails" required>
+    <button type="submit">Agregar Producto</button>
+</form>
