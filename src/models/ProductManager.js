@@ -1,76 +1,78 @@
-import fs from 'fs';
+import Product from "../models/Product.js";
 
 export class ProductManager {
-    constructor(filePath) {
-        this.path = filePath;
-    }
+    constructor() {}
 
-    async getProducts() {
+
+    // Funcion para obtener todos los productos
+    async getProducts({ limit = 10, page = 1, sort, query }) {
         try {
-            if (!fs.existsSync(this.path)) return [];
-            const data = await fs.promises.readFile(this.path, 'utf-8');
-            return JSON.parse(data);
+            const filter = query ? { $or: [{ category: query }, { status: query }] } : {};
+            const options = {
+                limit: parseInt(limit),
+                page: parseInt(page),
+                sort: sort ? { price: sort === "asc" ? 1 : -1 } : {},
+                lean: true // Para devolver objetos JS en lugar de instancias de Mongoose
+            };
+
+            const result = await Product.paginate(filter, options);
+
+            return {
+                status: "success",
+                payload: result.docs,
+                totalPages: result.totalPages,
+                prevPage: result.prevPage,
+                nextPage: result.nextPage,
+                page: result.page,
+                hasPrevPage: result.hasPrevPage,
+                hasNextPage: result.hasNextPage,
+                prevLink: result.hasPrevPage ? `/api/products?limit=${limit}&page=${result.prevPage}&sort=${sort}&query=${query}` : null,
+                nextLink: result.hasNextPage ? `/api/products?limit=${limit}&page=${result.nextPage}&sort=${sort}&query=${query}` : null
+            };
         } catch (error) {
-            console.error('Error al leer los productos:', error);
-            return [];
+            console.error("Error al obtener los productos:", error);
+            return { status: "error", message: "Error al obtener los productos" };
         }
     }
-
+    // Funcion para obtener un producto mediante el ID
     async getProductById(id) {
         try {
-            const products = await this.getProducts();
-            return products.find(prod => prod.id === id) || null;
+            return await Product.findById(id);
         } catch (error) {
-            console.error('Error al obtener el producto por ID:', error);
+            console.error("Error al obtener el producto:", error);
             return null;
         }
     }
 
-    async addProduct(product) {
+    // Funcion para agregar un producto
+    async addProduct(productData) {
         try {
-            if (product.stock < 0 || product.code < 0) {
-                throw new Error('El stock y el código deben ser números positivos');
-            }
-            const products = await this.getProducts();
-            const newProduct = { id: products.length + 1, ...product };
-            products.push(newProduct);
-            await fs.promises.writeFile(this.path, JSON.stringify(products, null, 2));
+            const newProduct = new Product(productData);
+            await newProduct.save();
             return newProduct;
         } catch (error) {
-            console.error('Error al agregar el producto:', error);
+            console.error("Error al agregar el producto:", error);
             return null;
         }
     }
 
+    // Funcion para actualizar un producto mediante el ID
     async updateProduct(id, updatedFields) {
         try {
-            if (updatedFields.stock < 0 || updatedFields.code < 0) {
-                throw new Error('El stock y el código deben ser números positivos');
-            }
-            let products = await this.getProducts();
-            const index = products.findIndex(prod => prod.id === id);
-            if (index === -1) return null;
-
-            products[index] = { ...products[index], ...updatedFields, id };
-            await fs.promises.writeFile(this.path, JSON.stringify(products, null, 2));
-            return products[index];
+            return await Product.findByIdAndUpdate(id, updatedFields, { new: true });
         } catch (error) {
-            console.error('Error al actualizar el producto:', error);
+            console.error("Error al actualizar el producto:", error);
             return null;
         }
     }
 
+    // Funcion para eliminar un producto mediante el ID
     async deleteProduct(id) {
         try {
-            let products = await this.getProducts();
-            const newProducts = products.filter(prod => prod.id !== id);
-            if (products.length === newProducts.length) return null;
-
-            await fs.promises.writeFile(this.path, JSON.stringify(newProducts, null, 2));
-            return true;
+            return await Product.findByIdAndDelete(id);
         } catch (error) {
-            console.error('Error al eliminar el producto:', error);
-            return false;
+            console.error("Error al eliminar el producto:", error);
+            return null;
         }
     }
 }

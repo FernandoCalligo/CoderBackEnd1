@@ -1,18 +1,26 @@
-<h1>Lista de Productos en Tiempo Real</h1>
+<h1>Lista de Productos</h1>
 <ul id="product-list"></ul>
 
-<script src="/socket.io/socket.io.js"></script>
 <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const socket = io();
+    document.addEventListener('DOMContentLoaded', async () => {
+        // Función para obtener los productos desde el servidor
+        async function fetchProducts() {
+            try {
+                const response = await fetch('/api/products');
+                const data = await response.json();
+                console.log(data);
+                if (data.status === 'success') {
+                    renderProducts(data.payload);
+                } else {
+                    console.error('Error al obtener los productos:', data.message);
+                }
+            } catch (error) {
+                console.error('Error al obtener los productos:', error);
+            }
+        }
 
-        socket.on('connect', () => {
-            console.log('Conectado al servidor de Socket.IO');
-        });
-
-        // Escucho los productos del servidor
-        
-        socket.on('updateProducts', (products) => {
+        // Función para renderizar los productos en la lista
+        function renderProducts(products) {
             const productList = document.getElementById('product-list');
             productList.innerHTML = '';
             products.forEach(product => {
@@ -20,12 +28,35 @@
                 li.textContent = `${product.title} - $${product.price}`;
                 productList.appendChild(li);
             });
-        });
+        }
 
-        // Agrego un producto
+        // Función para agregar un producto
+        async function addProduct(product) {
+            try {
+                const response = await fetch('/api/products', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(product)
+                });
 
+                const data = await response.json();
+                if (data.status === 'success') {
+                    alert('Producto agregado correctamente');
+                    fetchProducts(); // Actualizar la lista de productos
+                } else {
+                    alert('Error al agregar el producto:', data.message);
+                }
+            } catch (error) {
+                console.error('Error al agregar el producto:', error);
+            }
+        }
+
+        // Manejar el envío del formulario
         document.getElementById('add-product-form').addEventListener('submit', (event) => {
             event.preventDefault();
+
             const title = document.getElementById('title').value;
             const description = document.getElementById('description').value;
             const code = document.getElementById('code').value;
@@ -35,14 +66,14 @@
             const category = document.getElementById('category').value;
             const thumbnails = document.getElementById('thumbnails').value;
 
-            socket.emit('addProduct', { title, description, code, price, status, stock, category, thumbnails });
+            const newProduct = { title, description, code, price, status, stock, category, thumbnails };
+            addProduct(newProduct);
         });
 
-        // Traigo los productos al cargar la página
-        socket.emit('requestProducts');
+        // Obtener los productos al cargar la página
+        fetchProducts();
     });
 </script>
-
 
 <form id="add-product-form">
     <input type="text" id="title" placeholder="Nombre del producto" required>

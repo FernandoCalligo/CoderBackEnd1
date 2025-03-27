@@ -1,0 +1,64 @@
+<h1>Detalles del Carrito</h1>
+
+<div>
+    <h2>Carrito ID: {{cart._id}}</h2>
+    <button onclick="emptyCart('{{cart._id}}')">Vaciar Carrito</button>
+    <ul>
+        {{#each cart.products}}
+        <li>
+            <h3>{{this.product.title}}</h3>
+            <p><strong>Precio:</strong> ${{this.product.price}}</p>
+            <p><strong>Cantidad:</strong> {{this.quantity}}</p>
+            <button onclick="removeProductFromCart('{{../cart._id}}', '{{this.product._id}}')">Eliminar Producto</button>
+        </li>
+        {{/each}}
+    </ul>
+</div>
+
+<script>
+    // Función para vaciar el carrito
+    async function emptyCart(cartId) {
+        if (!confirm("¿Estás seguro de que deseas vaciar el carrito?")) return;
+
+        try {
+            const response = await fetch(`/api/carts/${cartId}`, {
+                method: 'DELETE'
+            });
+
+            const data = await response.json();
+
+            if (data.status === 'success') {
+                alert('Carrito vaciado correctamente');
+                location.reload();
+            } else {
+                alert('Error al vaciar el carrito');
+            }
+        } catch (error) {
+            console.error('Error al vaciar el carrito:', error);
+            alert('Error al vaciar el carrito');
+        }
+    }
+
+    // Función para eliminar un producto del carrito
+    async function removeProductFromCart(cartId, productId) {
+        if (!confirm("¿Estás seguro de que deseas eliminar este producto del carrito?")) return;
+
+        try {
+            const response = await fetch(`/api/carts/${cartId}/products/${productId}`, {
+                method: 'DELETE'
+            });
+
+            const data = await response.json();
+
+            if (data.status === 'success') {
+                alert('Producto eliminado del carrito');
+                location.reload();
+            } else {
+                alert('Error al eliminar el producto del carrito');
+            }
+        } catch (error) {
+            console.error('Error al eliminar el producto del carrito:', error);
+            alert('Error al eliminar el producto del carrito');
+        }
+    }
+</script>

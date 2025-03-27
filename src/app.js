@@ -2,57 +2,59 @@ import express from 'express';
 import { createServer } from 'http';
 import { Server } from "socket.io";
 import { create } from 'express-handlebars';
-import productsRouter from './routes/products.routes.js';
-import cartsRouter from './routes/carts.routes.js';
+import productsRouter from './routes/products.routes.js'; // Rutas de la API de productos
+import cartsRouter from './routes/carts.routes.js'; // Rutas de la API de carritos
+import viewsRouter from './routes/views.routes.js'; // Rutas para las vistas
 import path from 'path';
-import { fileURLToPath } from 'url';
-import viewsRouter from './routes/views.routes.js';
-import { ProductManager } from './models/ProductManager.js';
+import { fileURLToPath } from 'url'
+import mongoose from 'mongoose'
+import configureSockets from './sockets/sockets.js'
+// import { CartManager } from './models/CartManager.js'
 
-const app = express();
-const server = createServer(app);
-const io = new Server(server);
+// Inicialización de Express
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+const app = express()
+const server = createServer(app)
+const io = new Server(server)
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+// Conexión a MongoDB
+const mongoURI = "mongodb://127.0.0.1:27017/"
+mongoose.connect(mongoURI)
+    .then(() => console.log("Conectado a MongoDB"))
+    .catch(err => console.error("Error al conectar a MongoDB", err))
+
+// Configuración de middlewares
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
+
+// Configuración de Handlebars
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
 const hbs = create({
-    defaultLayout: false
+    defaultLayout: false,
+    runtimeOptions: {
+        allowProtoPropertiesByDefault: true,
+        allowProtoMethodsByDefault: true
+    }
 });
+
 app.engine('handlebars', hbs.engine);
 app.set('view engine', 'handlebars');
-app.set('views', path.join(__dirname, 'views'));
+app.set('views', path.join(__dirname, 'views'))
 
-app.use('/api/products', productsRouter);
-app.use('/api/carts', cartsRouter);
+// Rutas
+app.use('/api/products', productsRouter)// Rutas de la API de productos
+app.use('/api/carts', cartsRouter) // Rutas de la API de carritos
+app.use('/', viewsRouter) // Rutas para las vistas
 
-app.use('/', viewsRouter);
+configureSockets(io)
 
-const productManager = new ProductManager(path.join(__dirname, 'data', 'products.json'));
+// const cartManager = new CartManager();
+// const cart = await cartManager.hasCarts();
+// console.log(cart)
 
-io.on('connection', async (socket) => {
-    console.log('Nuevo cliente conectado');
-
-    // envia los productos al cliente
-    const products = await productManager.getProducts();
-    socket.emit('updateProducts', products);
-
-    // Añade un producto y actualiza la lista de productos 
-    socket.on('addProduct', async (product) => {
-        const newProduct = await productManager.addProduct(product);
-        const updatedProducts = await productManager.getProducts();
-        io.emit('updateProducts', updatedProducts); // hace un update de todos los productos
-    });
-
-    socket.on('requestProducts', async () => {
-        const products = await productManager.getProducts();
-        socket.emit('updateProducts', products);
-    });
-});
-
+// Iniciar el servidor
 const PORT = 8080;
 server.listen(PORT, () => {
     console.log(`Servidor escuchando en el puerto ${PORT}`);
