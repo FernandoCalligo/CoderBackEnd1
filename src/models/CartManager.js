@@ -41,7 +41,7 @@ export class CartManager {
         }
     }
 
-    // ✅ Crear un nuevo carrito vacío
+    // Funcion para Crear Carrito vacio
     async createCart() {
         try {
             const newCart = await Cart.create({ products: [] });
@@ -53,7 +53,7 @@ export class CartManager {
         }
     }
 
-    // ✅ Agregar un producto al carrito
+    // Funcion para agregar un producto al carrito
     async addProductToCart(cartId, productId) {
         if (!mongoose.Types.ObjectId.isValid(cartId) || !mongoose.Types.ObjectId.isValid(productId)) {
             console.error("ID de carrito o producto inválido");
@@ -83,7 +83,7 @@ export class CartManager {
         }
     }
 
-    // ✅ Actualizar el carrito con una lista de productos
+    // Funcion para actualizar el carrito con una lista de productos
     async updateCart(cartId, products) {
         if (!mongoose.Types.ObjectId.isValid(cartId)) {
             console.error("ID de carrito inválido");
@@ -98,7 +98,7 @@ export class CartManager {
         }
     }
 
-    // ✅ Actualizar la cantidad de un producto en el carrito
+    // Funcion para atualizar la cantidad de un producto en el carrito
     async updateProductQuantity(cartId, productId, quantity) {
         if (!mongoose.Types.ObjectId.isValid(cartId) || !mongoose.Types.ObjectId.isValid(productId)) {
             console.error("ID de carrito o producto inválido");
@@ -132,7 +132,7 @@ export class CartManager {
         }
     }
 
-    // ✅ Eliminar un producto del carrito
+    // Eliminar un producto del carrito
     async deleteProductFromCart(cartId, productId) {
         if (!mongoose.Types.ObjectId.isValid(cartId) || !mongoose.Types.ObjectId.isValid(productId)) {
             console.error("ID de carrito o producto inválido");
@@ -151,7 +151,7 @@ export class CartManager {
         }
     }
 
-    // ✅ Vaciar un carrito
+    // Vaciar un carrito
     async deleteCart(cartId) {
         if (!mongoose.Types.ObjectId.isValid(cartId)) {
             console.error("ID de carrito inválido");

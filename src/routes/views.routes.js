@@ -69,4 +69,9 @@ router.get('/carts/:cid', async (req, res) => {
     }
 });
 
+// Renderiza la vista de registro
+router.get('/login', (req, res) => {
+    res.render('login');
+});
+
 export default router;

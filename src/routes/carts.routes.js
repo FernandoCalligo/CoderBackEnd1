@@ -8,8 +8,8 @@ import { CartManager } from "../models/CartManager.js";
     router.get("/:cid", async (req, res) => {
         try {
             const cart = await cartManager.getCartById(req.params.cid);
-            if (!cart) return res.status(404).json({ status: "error", message: "Carrito no encontrado" });
-            res.json({ status: "success", payload: cart });
+            if (!cart) return res.status(404).json({ status: "error", message: "Carrito no encontrado" })
+            res.json({ status: "success", payload: cart })
         } catch (error) {
             console.error("Error al obtener el carrito:", error);
             res.status(500).json({ status: "error", message: "Error interno del servidor" });
@@ -18,7 +18,7 @@ import { CartManager } from "../models/CartManager.js";
 
     // Crear un nuevo carrito vacio
     router.post("/", async (req, res) => {
-        console.log("Solicitud recibida en /api/carts");
+        console.log("Solicitud recibida en /api/carts")
         try {
             const newCart = await cartManager.createCart();
             console.log("Nuevo carrito creado:", newCart);
@@ -73,7 +73,7 @@ import { CartManager } from "../models/CartManager.js";
         try {
             const { quantity } = req.body;
             if (!quantity || isNaN(quantity) || quantity < 1) {
-                return res.status(400).json({ status: "error", message: "Cantidad inválida" });
+                return res.status(400).json({ status: "error", message: "Cantidad invalida" });
             }
             const updatedCart = await cartManager.updateProductQuantity(req.params.cid, req.params.pid, quantity);
             if (!updatedCart) return res.status(404).json({ status: "error", message: "Carrito o producto no encontrado" });

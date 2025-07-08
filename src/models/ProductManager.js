@@ -12,7 +12,7 @@ export class ProductManager {
                 limit: parseInt(limit),
                 page: parseInt(page),
                 sort: sort ? { price: sort === "asc" ? 1 : -1 } : {},
-                lean: true // Para devolver objetos JS en lugar de instancias de Mongoose
+                lean: true
             };
 
             const result = await Product.paginate(filter, options);
@@ -30,8 +30,8 @@ export class ProductManager {
                 nextLink: result.hasNextPage ? `/api/products?limit=${limit}&page=${result.nextPage}&sort=${sort}&query=${query}` : null
             };
         } catch (error) {
-            console.error("Error al obtener los productos:", error);
-            return { status: "error", message: "Error al obtener los productos" };
+            console.error("Error al obtener los productos:", error)
+            return { status: "error", message: "Error al obtener los productos" }
         }
     }
     // Funcion para obtener un producto mediante el ID
@@ -47,7 +47,7 @@ export class ProductManager {
     // Funcion para agregar un producto
     async addProduct(productData) {
         try {
-            const newProduct = new Product(productData);
+            const newProduct = new Product(productData)
             await newProduct.save();
             return newProduct;
         } catch (error) {
